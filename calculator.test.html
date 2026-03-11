@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculator Tests</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      padding: 32px 16px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 4px;
+    }
+
+    .summary {
+      font-size: 0.875rem;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    .summary span {
+      font-weight: 600;
+    }
+
+    .summary .pass { color: #2e9e5b; }
+    .summary .fail { color: #c0392b; }
+
+    .suite {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .suite h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1.5px solid #f0f0f0;
+    }
+
+    .test {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+
+    .test:last-child { border-bottom: none; }
+
+    .badge {
+      flex-shrink: 0;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-top: 1px;
+    }
+
+    .badge.pass { background: #e6f9f0; color: #2e9e5b; }
+    .badge.fail { background: #fdecea; color: #c0392b; }
+
+    .test-info { flex: 1; }
+
+    .test-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .test-detail {
+      font-size: 0.8rem;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    .test-detail.error { color: #c0392b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Calculator Tests</h1>
+    <p class="summary" id="summary"></p>
+    <div id="output"></div>
+  </div>
+
+  <script src="calculator.js"></script>
+  <script>
+    const results = [];
+
+    function approx(a, b, tolerance = 0.01) {
+      return Math.abs(a - b) <= tolerance;
+    }
+
+    function test(suiteName, testName, fn) {
+      try {
+        fn();
+        results.push({ suite: suiteName, name: testName, pass: true });
+      } catch (e) {
+        results.push({ suite: suiteName, name: testName, pass: false, error: e.message });
+      }
+    }
+
+    function assert(condition, message) {
+      if (!condition) throw new Error(message);
+    }
+
+    // ─── Test suites ────────────────────────────────────────────────────────────
+
+    test('Basic Earnings', 'Gross earnings = day rate × billable days × (1 + VAT)', () => {
+      const { gross } = calculateEarnings(500, 10, 'days', 0, 20);
+      // 500 × 10 × 1.2 = 6000
+      assert(approx(gross, 6000), `Expected £6,000, got £${gross}`);
+    });
+
+    test('Basic Earnings', 'Net earnings = day rate × billable days (excl. VAT)', () => {
+      const { net } = calculateEarnings(500, 10, 'days', 0, 20);
+      // 500 × 10 = 5000
+      assert(approx(net, 5000), `Expected £5,000, got £${net}`);
+    });
+
+    test('Basic Earnings', 'Billable days = contract duration − leave', () => {
+      const { billable } = calculateEarnings(500, 20, 'days', 5, 20);
+      assert(approx(billable, 15), `Expected 15 days, got ${billable}`);
+    });
+
+    test('VAT Calculation', 'VAT amount = day rate × billable days × VAT rate', () => {
+      const { vatAmt } = calculateEarnings(400, 5, 'days', 0, 20);
+      // 400 × 5 × 0.20 = 400
+      assert(approx(vatAmt, 400), `Expected £400, got £${vatAmt}`);
+    });
+
+    test('VAT Calculation', 'Zero VAT rate produces no VAT amount', () => {
+      const { vatAmt, gross, net } = calculateEarnings(500, 10, 'days', 0, 0);
+      assert(approx(vatAmt, 0), `VAT should be 0, got £${vatAmt}`);
+      assert(approx(gross, net), `Gross and net should match when VAT is 0`);
+    });
+
+    test('VAT Calculation', 'Custom VAT rate (15%) applied correctly', () => {
+      const { vatAmt } = calculateEarnings(1000, 1, 'days', 0, 15);
+      // 1000 × 0.15 = 150
+      assert(approx(vatAmt, 150), `Expected £150, got £${vatAmt}`);
+    });
+
+    test('Zero Leave Days', 'All contract days are billable when leave is 0', () => {
+      const { billable } = calculateEarnings(500, 30, 'days', 0, 20);
+      assert(approx(billable, 30), `Expected 30 billable days, got ${billable}`);
+    });
+
+    test('Zero Leave Days', 'Gross reflects full contract with no leave', () => {
+      const { gross } = calculateEarnings(300, 5, 'days', 0, 20);
+      // 300 × 5 × 1.2 = 1800
+      assert(approx(gross, 1800), `Expected £1,800, got £${gross}`);
+    });
+
+    test('Leave = Contract Duration', 'Zero billable days when leave equals duration', () => {
+      const { billable } = calculateEarnings(500, 20, 'days', 20, 20);
+      assert(approx(billable, 0), `Expected 0 billable days, got ${billable}`);
+    });
+
+    test('Leave = Contract Duration', 'All earnings are zero when no billable days', () => {
+      const { gross, vatAmt, net } = calculateEarnings(500, 20, 'days', 20, 20);
+      assert(approx(gross, 0),   `Gross should be 0, got £${gross}`);
+      assert(approx(vatAmt, 0),  `VAT should be 0, got £${vatAmt}`);
+      assert(approx(net, 0),     `Net should be 0, got £${net}`);
+    });
+
+    test('Leave = Contract Duration', 'Billable days never go negative when leave exceeds duration', () => {
+      const { billable } = calculateEarnings(500, 10, 'days', 20, 20);
+      assert(billable >= 0, `Billable days should not be negative, got ${billable}`);
+    });
+
+    test('Decimal Day Rates', 'Decimal day rate (£487.50) calculates correctly', () => {
+      const { net } = calculateEarnings(487.50, 4, 'days', 0, 20);
+      // 487.50 × 4 = 1950
+      assert(approx(net, 1950), `Expected £1,950, got £${net}`);
+    });
+
+    test('Decimal Day Rates', 'Gross with decimal rate is accurate to pence', () => {
+      const { gross } = calculateEarnings(333.33, 3, 'days', 0, 20);
+      // 333.33 × 3 × 1.2 = 1199.988
+      assert(approx(gross, 1199.99, 0.02), `Expected ~£1,199.99, got £${gross}`);
+    });
+
+    test('Working Days (Period)', 'Counts only weekdays between two dates', () => {
+      // Mon 6 Jan – Fri 10 Jan 2025 = 5 working days, no bank holidays
+      const days = getWorkingDays('2025-01-06', '2025-01-10');
+      assert(days === 5, `Expected 5, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Excludes weekends', () => {
+      // Mon 6 Jan – Sun 12 Jan 2025 = 5 working days (Sat/Sun excluded)
+      const days = getWorkingDays('2025-01-06', '2025-01-12');
+      assert(days === 5, `Expected 5, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Excludes UK bank holidays', () => {
+      // Mon 23 Dec – Fri 3 Jan 2025 spans Christmas (25 Dec) and Boxing Day (26 Dec)
+      // Working days: 23, 24, 27 Dec = skipped (bank hols 25, 26), 30, 31 Dec, 2, 3 Jan (1 Jan bank hol) = 7
+      const days = getWorkingDays('2024-12-23', '2025-01-03');
+      assert(days === 7, `Expected 7, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Returns 0 for end date before start date', () => {
+      const days = getWorkingDays('2025-06-10', '2025-06-01');
+      assert(days === 0, `Expected 0, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Returns 0 for invalid dates', () => {
+      const days = getWorkingDays('', '');
+      assert(days === 0, `Expected 0, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Same day returns 1 if it is a working day', () => {
+      // Wednesday 8 Jan 2025
+      const days = getWorkingDays('2025-01-08', '2025-01-08');
+      assert(days === 1, `Expected 1, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Same day returns 0 if it is a weekend', () => {
+      // Saturday 11 Jan 2025
+      const days = getWorkingDays('2025-01-11', '2025-01-11');
+      assert(days === 0, `Expected 0, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Correctly counts across DST boundary (Oct–Apr)', () => {
+      // 20 Oct 2025 – 17 Apr 2026 spans the Oct DST change
+      // 125 working days excluding weekends + 5 bank holidays (25,26 Dec, 1 Jan, 3,6 Apr)
+      const days = getWorkingDays('2025-10-20', '2026-04-17');
+      assert(days === 125, `Expected 125, got ${days}`);
+    });
+
+    test('Working Days (Period)', 'Same day returns 0 if it is a bank holiday', () => {
+      // Christmas Day 2025
+      const days = getWorkingDays('2025-12-25', '2025-12-25');
+      assert(days === 0, `Expected 0, got ${days}`);
+    });
+
+    // ─── Render results ─────────────────────────────────────────────────────────
+
+    const suites = [...new Set(results.map(r => r.suite))];
+    const passed = results.filter(r => r.pass).length;
+    const failed = results.length - passed;
+
+    const summary = document.getElementById('summary');
+    summary.innerHTML =
+      `${results.length} tests &nbsp;·&nbsp; ` +
+      `<span class="pass">${passed} passed</span> &nbsp;·&nbsp; ` +
+      `<span class="${failed > 0 ? 'fail' : 'pass'}">${failed} failed</span>`;
+
+    const output = document.getElementById('output');
+
+    suites.forEach(suite => {
+      const suiteResults = results.filter(r => r.suite === suite);
+      const el = document.createElement('div');
+      el.className = 'suite';
+      el.innerHTML = `<h2>${suite}</h2>` + suiteResults.map(r => `
+        <div class="test">
+          <span class="badge ${r.pass ? 'pass' : 'fail'}">${r.pass ? 'PASS' : 'FAIL'}</span>
+          <div class="test-info">
+            <div class="test-name">${r.name}</div>
+            ${r.error ? `<div class="test-detail error">${r.error}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+      output.appendChild(el);
+    });
+  </script>
+</body>
+</html>

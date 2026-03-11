@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freelance Calculator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 480px;
+      padding: 32px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 0.875rem;
+      color: #888;
+      margin-bottom: 28px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap .prefix {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: #111;
+      background: #fafafa;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+      appearance: none;
+    }
+
+    input::placeholder { color: #ccc; }
+    input[readonly] { color: #888; cursor: default; background: #e8e8e8; border-color: #ddd; }
+    input[readonly]:focus { border-color: #ddd; box-shadow: none; background: #e8e8e8; }
+
+    input:focus {
+      border-color: #5c6ef8;
+      box-shadow: 0 0 0 3px rgba(92,110,248,0.12);
+      background: #fff;
+    }
+
+    input.empty {
+      border-color: #f0a0a0;
+      background: #fff8f8;
+    }
+
+    input.empty:focus {
+      border-color: #e06060;
+      box-shadow: 0 0 0 3px rgba(220,80,80,0.1);
+      background: #fff;
+    }
+
+    .has-prefix input { padding-left: 30px; }
+
+    .has-suffix input { padding-right: 30px; }
+
+    .input-wrap .suffix {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+
+    .divider {
+      border: none;
+      border-top: 1.5px solid #f0f0f0;
+      margin: 28px 0;
+    }
+
+    .results {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: #f7f8ff;
+    }
+
+    .result-row.highlight {
+      background: #5c6ef8;
+    }
+
+    .result-label {
+      font-size: 0.875rem;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .result-row.highlight .result-label {
+      color: rgba(255,255,255,0.85);
+    }
+
+    .result-value {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: #111;
+    }
+
+    .result-row.highlight .result-value {
+      color: #fff;
+      font-size: 1.25rem;
+    }
+
+    /* Push 'days' label left of the native spinner (~17px wide) */
+    #leave { padding-right: 52px; }
+    .leave-suffix { right: 32px; }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .label-row label { margin-bottom: 0; }
+
+    .unit-toggle {
+      display: flex;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+
+    .unit-toggle button {
+      width: 62px;
+      height: 28px;
+      border: none;
+      background: transparent;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #999;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .unit-toggle button:not(:last-child) { border-right: 1.5px solid #e0e0e0; }
+    .unit-toggle button.active { background: #5c6ef8; color: #fff; }
+    .unit-toggle button:hover:not(.active) { background: #f0f2ff; color: #5c6ef8; }
+
+    .date-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .date-row .date-field { flex: 1; }
+
+    input[type="date"] {
+      cursor: pointer;
+      color: #111;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      opacity: 0.4;
+      cursor: pointer;
+    }
+
+    .working-days-note {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 6px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+      <h1>Freelance Calculator</h1>
+      <button onclick="resetAll()" style="background:none; border:none; font-size:0.8125rem; font-weight:600; color:#aaa; cursor:pointer; padding:0; transition:color 0.15s;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#aaa'">Reset</button>
+    </div>
+    <p class="subtitle">Estimate your contract earnings</p>
+
+    <div class="field">
+      <label>Day Rate</label>
+      <div class="input-wrap has-prefix">
+        <span class="prefix">£</span>
+        <input type="number" id="dayRate" min="0" step="1" placeholder="500" />
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label-row">
+        <label>Contract Duration</label>
+        <div class="unit-toggle">
+          <button id="unit-days" class="active" onclick="setUnit('days')">Days</button>
+          <button id="unit-period" onclick="setUnit('period')">Period</button>
+        </div>
+      </div>
+      <div id="days-input">
+        <div class="input-wrap has-suffix">
+          <input type="number" id="duration" min="0" step="1" placeholder="260" />
+          <span class="suffix">days</span>
+        </div>
+      </div>
+      <div id="period-input" style="display:none;">
+        <div class="date-row">
+          <div class="date-field">
+            <label>Start Date</label>
+            <input type="date" id="startDate" />
+          </div>
+          <div class="date-field">
+            <label>End Date</label>
+            <input type="date" id="endDate" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Planned Leave</label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="leave" min="0" step="1" placeholder="25" />
+        <span class="suffix leave-suffix">days</span>
+      </div>
+      <div class="working-days-note" id="workingDaysNote"></div>
+    </div>
+
+    <div class="field">
+      <label>VAT Rate</label>
+      <div class="input-wrap has-suffix">
+        <input type="number" id="vat" value="20" readonly />
+        <span class="suffix">%</span>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="results">
+      <div class="result-row">
+        <span class="result-label">Billable Days</span>
+        <span class="result-value" id="billableDays">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">Gross Earnings</span>
+        <span class="result-value" id="gross">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-label">VAT Amount</span>
+        <span class="result-value" id="vatAmount">—</span>
+      </div>
+      <div class="result-row highlight">
+        <span class="result-label">Net (post-VAT)</span>
+        <span class="result-value" id="net">—</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="calculator.js"></script>
+  <script>
+    const fmt = v => '£' + Math.round(v).toLocaleString('en-GB');
+
+    let currentUnit = 'days';
+
+    function setUnit(unit) {
+      currentUnit = unit;
+      document.getElementById('unit-days').classList.toggle('active', unit === 'days');
+      document.getElementById('unit-period').classList.toggle('active', unit === 'period');
+      document.getElementById('days-input').style.display   = unit === 'days'   ? '' : 'none';
+      document.getElementById('period-input').style.display = unit === 'period' ? '' : 'none';
+      calculate();
+    }
+
+    function calculate() {
+      const dayRate  = parseFloat(document.getElementById('dayRate').value) || 0;
+      const leave    = parseFloat(document.getElementById('leave').value) || 0;
+      const vatRate  = parseFloat(document.getElementById('vat').value) ?? 20;
+
+      let durationDays = 0;
+      if (currentUnit === 'days') {
+        durationDays = parseFloat(document.getElementById('duration').value) || 0;
+      } else {
+        const start = document.getElementById('startDate').value;
+        const end   = document.getElementById('endDate').value;
+        durationDays = getWorkingDays(start, end);
+      }
+
+      const { billable, gross, vatAmt, net } = calculateEarnings(dayRate, durationDays, 'days', leave, vatRate);
+
+      document.getElementById('billableDays').textContent = billable > 0 ? Math.round(billable) + ' days' : '—';
+      document.getElementById('gross').textContent        = gross > 0 ? fmt(gross) : '—';
+      document.getElementById('vatAmount').textContent    = gross > 0 ? fmt(vatAmt) : '—';
+      document.getElementById('net').textContent          = gross > 0 ? fmt(net) : '—';
+
+      const note = document.getElementById('workingDaysNote');
+      if (currentUnit === 'period' && durationDays > 0) {
+        const holidayNote = ' (excl. weekends & UK bank holidays)';
+        if (leave > 0) {
+          note.textContent = `${durationDays} working days${holidayNote} − ${leave} leave = ${Math.round(billable)} billable days`;
+        } else {
+          note.textContent = `${durationDays} working days${holidayNote}`;
+        }
+      } else if (currentUnit === 'days' && durationDays > 0 && leave > 0) {
+        note.textContent = `${durationDays} contract days − ${leave} leave = ${Math.round(billable)} billable days`;
+      } else {
+        note.textContent = '';
+      }
+
+      updateEmptyStates();
+    }
+
+    const touched = new Set();
+
+    document.querySelectorAll('input').forEach(el => {
+      el.addEventListener('input', () => { touched.add(el.id); calculate(); });
+      el.addEventListener('blur',  () => { touched.add(el.id); updateEmptyStates(); });
+    });
+
+    function updateEmptyStates() {
+      const requiredDays   = ['dayRate', 'duration'];
+      const requiredPeriod = ['dayRate', 'startDate', 'endDate'];
+      const required = currentUnit === 'days' ? requiredDays : requiredPeriod;
+      document.querySelectorAll('input').forEach(el => {
+        if (!touched.has(el.id)) return;
+        const isEmpty = el.value === '' || (el.type === 'number' && parseFloat(el.value) <= 0);
+        el.classList.toggle('empty', required.includes(el.id) && isEmpty);
+      });
+    }
+
+    function resetAll() {
+      document.getElementById('dayRate').value   = '';
+      document.getElementById('duration').value  = '';
+      document.getElementById('startDate').value = '';
+      document.getElementById('endDate').value   = '';
+      document.getElementById('leave').value     = '';
+      document.getElementById('vat').value       = 20;
+      touched.clear();
+      document.querySelectorAll('input').forEach(el => el.classList.remove('empty'));
+      setUnit('days');
+    }
+
+    calculate();
+  </script>
+</body>
+</html>
