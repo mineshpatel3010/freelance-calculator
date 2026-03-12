@@ -9,7 +9,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f0f2f5;
+      background: linear-gradient(135deg, #e8f5f0 0%, #f0fdf9 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -19,17 +19,17 @@
 
     .card {
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
       width: 100%;
       max-width: 480px;
-      padding: 32px;
+      padding: 36px 32px 28px;
     }
 
     h1 {
       font-size: 1.5rem;
-      font-weight: 700;
-      color: #5b9bd5;
+      font-weight: 800;
+      color: #0d9488;
       margin-bottom: 4px;
     }
 
@@ -85,8 +85,8 @@
     input[readonly]:focus { border-color: #ddd; box-shadow: none; background: #e8e8e8; }
 
     input:focus {
-      border-color: #5c6ef8;
-      box-shadow: 0 0 0 3px rgba(92,110,248,0.12);
+      border-color: #0d9488;
+      box-shadow: 0 0 0 3px rgba(13,148,136,0.12);
       background: #fff;
     }
 
@@ -133,12 +133,12 @@
       justify-content: space-between;
       align-items: center;
       padding: 14px 16px;
-      border-radius: 10px;
-      background: #f7f8ff;
+      border-radius: 12px;
+      background: #f0fdf9;
     }
 
     .result-row.highlight {
-      background: #5c6ef8;
+      background: #0d9488;
     }
 
     .result-label {
@@ -196,8 +196,8 @@
     }
 
     .unit-toggle button:not(:last-child) { border-right: 1.5px solid #e0e0e0; }
-    .unit-toggle button.active { background: #5c6ef8; color: #fff; }
-    .unit-toggle button:hover:not(.active) { background: #f0f2ff; color: #5c6ef8; }
+    .unit-toggle button.active { background: #0d9488; color: #fff; }
+    .unit-toggle button:hover:not(.active) { background: #f0fdf9; color: #0d9488; }
 
     .date-row {
       display: flex;
@@ -222,6 +222,13 @@
       margin-top: 6px;
     }
 
+    .footer-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-top: 24px;
+    }
+
   </style>
 </head>
 <body>
@@ -229,7 +236,7 @@
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
       <div style="display:flex; align-items:center; gap:8px;">
         <h1>Freelance Calculator</h1>
-        <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.06em; background:#fff3e0; color:#e07a00; padding:3px 8px; border-radius:6px; text-transform:uppercase;">Beta</span>
+        <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.06em; background:#ccfbf1; color:#0d9488; padding:3px 8px; border-radius:6px; text-transform:uppercase;">Beta</span>
       </div>
       <button onclick="resetAll()" style="background:none; border:none; font-size:0.8125rem; font-weight:600; color:#aaa; cursor:pointer; padding:0; transition:color 0.15s;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#aaa'">Reset</button>
     </div>
@@ -308,6 +315,7 @@
         <span class="result-value" id="net">—</span>
       </div>
     </div>
+    <p class="footer-note">UK freelancers &mdash; estimates only</p>
   </div>
 
   <script src="calculator.js"></script>
