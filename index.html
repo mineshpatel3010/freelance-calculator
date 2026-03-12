@@ -163,8 +163,8 @@
     }
 
     /* Push 'days' label left of the native spinner (~17px wide) */
-    #leave { padding-right: 52px; }
-    .leave-suffix { right: 32px; }
+    #leave, #duration { padding-right: 52px; }
+    .leave-suffix, .duration-suffix { right: 32px; }
 
     .label-row {
       display: flex;
@@ -261,7 +261,7 @@
       <div id="days-input">
         <div class="input-wrap has-suffix">
           <input type="number" id="duration" min="0" step="1" placeholder="260" />
-          <span class="suffix">days</span>
+          <span class="suffix duration-suffix">days</span>
         </div>
       </div>
       <div id="period-input" style="display:none;">
