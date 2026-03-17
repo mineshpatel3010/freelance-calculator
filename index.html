@@ -7,6 +7,13 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --brand: #7c3aed;
+      --brand-light: #f5f3ff;
+      --brand-pale: #ede9fe;
+      --brand-shadow: rgba(124,58,237,0.12);
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
@@ -29,7 +36,7 @@
     h1 {
       font-size: 1.5rem;
       font-weight: 800;
-      color: #7c3aed;
+      color: var(--brand);
       margin-bottom: 4px;
     }
 
@@ -85,8 +92,8 @@
     input[readonly]:focus { border-color: #ddd; box-shadow: none; background: #e8e8e8; }
 
     input:focus {
-      border-color: #7c3aed;
-      box-shadow: 0 0 0 3px rgba(124,58,237,0.12);
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px var(--brand-shadow);
       background: #fff;
     }
 
@@ -134,11 +141,11 @@
       align-items: center;
       padding: 14px 16px;
       border-radius: 12px;
-      background: #f5f3ff;
+      background: var(--brand-light);
     }
 
     .result-row.highlight {
-      background: #7c3aed;
+      background: var(--brand);
     }
 
     .result-label {
@@ -196,8 +203,8 @@
     }
 
     .unit-toggle button:not(:last-child) { border-right: 1.5px solid #e0e0e0; }
-    .unit-toggle button.active { background: #7c3aed; color: #fff; }
-    .unit-toggle button:hover:not(.active) { background: #f5f3ff; color: #7c3aed; }
+    .unit-toggle button.active { background: var(--brand); color: #fff; }
+    .unit-toggle button:hover:not(.active) { background: var(--brand-pale); color: var(--brand); }
 
     .date-row {
       display: flex;
@@ -222,6 +229,17 @@
       margin-top: 6px;
     }
 
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      background: var(--brand-pale);
+      color: var(--brand);
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
     .footer-note {
       text-align: center;
       font-size: 0.75rem;
@@ -236,7 +254,7 @@
     <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
       <div style="display:flex; align-items:center; gap:8px;">
         <h1>Freelance Calculator</h1>
-        <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.06em; background:#ede9fe; color:#7c3aed; padding:3px 8px; border-radius:6px; text-transform:uppercase;">Beta</span>
+        <span class="badge">Beta</span>
       </div>
       <button onclick="resetAll()" style="background:none; border:none; font-size:0.8125rem; font-weight:600; color:#aaa; cursor:pointer; padding:0; transition:color 0.15s;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#aaa'">Reset</button>
     </div>
