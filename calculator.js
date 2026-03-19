@@ -61,3 +61,7 @@ function calculateEarnings(dayRate, duration, unit, leave, vatRate) {
   const net          = gross - vatAmt;
   return { billable, gross, vatAmt, net };
 }
+
+if (typeof module !== 'undefined') {
+  module.exports = { calculateEarnings, getWorkingDays };
+}
