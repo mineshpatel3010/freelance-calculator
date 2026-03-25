@@ -53,6 +53,10 @@ function toDays(value, unit) {
   return value;
 }
 
+function isValidDayIncrement(value) {
+  return Math.abs((value * 2) % 1) < 0.001;
+}
+
 function calculateEarnings(dayRate, duration, unit, leave, vatRate) {
   const durationDays = toDays(duration, unit);
   const billable     = Math.max(0, durationDays - leave);
@@ -63,5 +67,5 @@ function calculateEarnings(dayRate, duration, unit, leave, vatRate) {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { calculateEarnings, getWorkingDays };
+  module.exports = { calculateEarnings, getWorkingDays, isValidDayIncrement };
 }

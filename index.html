@@ -279,7 +279,7 @@
       </div>
       <div id="days-input">
         <div class="input-wrap has-suffix">
-          <input type="number" id="duration" min="0" step="1" placeholder="260" />
+          <input type="number" id="duration" min="0" step="0.5" placeholder="260" />
           <span class="suffix duration-suffix">days</span>
         </div>
       </div>
@@ -359,7 +359,8 @@
 
       let durationDays = 0;
       if (currentUnit === 'days') {
-        durationDays = parseFloat(document.getElementById('duration').value) || 0;
+        const rawDuration = parseFloat(document.getElementById('duration').value) || 0;
+        durationDays = isValidDayIncrement(rawDuration) ? rawDuration : 0;
       } else {
         const start = document.getElementById('startDate').value;
         const end   = document.getElementById('endDate').value;
@@ -368,7 +369,8 @@
 
       const { billable, gross, vatAmt, net } = calculateEarnings(dayRate, durationDays, 'days', leave, vatRate);
 
-      document.getElementById('billableDays').textContent = billable > 0 ? Math.round(billable) + ' days' : '—';
+      const fmtDays = v => Number.isInteger(v) ? v : v.toFixed(1);
+      document.getElementById('billableDays').textContent = billable > 0 ? fmtDays(billable) + ' days' : '—';
       document.getElementById('gross').textContent        = gross > 0 ? fmt(gross) : '—';
       document.getElementById('vatAmount').textContent    = gross > 0 ? fmt(vatAmt) : '—';
       document.getElementById('net').textContent          = gross > 0 ? fmt(net) : '—';
@@ -377,12 +379,12 @@
       if (currentUnit === 'period' && durationDays > 0) {
         const holidayNote = ' (excl. weekends & UK bank holidays)';
         if (leave > 0) {
-          note.textContent = `${durationDays} working days${holidayNote} − ${leave} leave = ${Math.round(billable)} billable days`;
+          note.textContent = `${durationDays} working days${holidayNote} − ${leave} leave = ${fmtDays(billable)} billable days`;
         } else {
           note.textContent = `${durationDays} working days${holidayNote}`;
         }
       } else if (currentUnit === 'days' && durationDays > 0 && leave > 0) {
-        note.textContent = `${durationDays} contract days − ${leave} leave = ${Math.round(billable)} billable days`;
+        note.textContent = `${fmtDays(durationDays)} contract days − ${leave} leave = ${fmtDays(billable)} billable days`;
       } else {
         note.textContent = '';
       }
@@ -403,7 +405,9 @@
       const required = currentUnit === 'days' ? requiredDays : requiredPeriod;
       document.querySelectorAll('input').forEach(el => {
         if (!touched.has(el.id)) return;
-        const isEmpty = el.value === '' || (el.type === 'number' && parseFloat(el.value) <= 0);
+        const numVal = parseFloat(el.value);
+        const isInvalidIncrement = el.id === 'duration' && currentUnit === 'days' && el.value !== '' && numVal > 0 && !isValidDayIncrement(numVal);
+        const isEmpty = isInvalidIncrement || el.value === '' || (el.type === 'number' && numVal <= 0);
         el.classList.toggle('empty', required.includes(el.id) && isEmpty);
       });
     }
