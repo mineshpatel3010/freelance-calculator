@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { calculateEarnings, getWorkingDays } = require('./calculator');
+const { calculateEarnings, getWorkingDays, isValidDayIncrement } = require('./calculator');
 
 function round(n, dp = 2) {
   return Math.round(n * Math.pow(10, dp)) / Math.pow(10, dp);
@@ -107,6 +107,47 @@ test('Years unit: gross calculated correctly', () => {
   const { gross } = calculateEarnings(500, 1, 'years', 0, 20);
   // 500 × 252 × 1.2 = 151200
   assert.strictEqual(round(gross), 151200);
+});
+
+// ─── Half Day Increments ─────────────────────────────────────────────────────
+
+test('Whole number of days is a valid increment', () => {
+  assert.ok(isValidDayIncrement(10));
+});
+
+test('Half day (0.5) is a valid increment', () => {
+  assert.ok(isValidDayIncrement(0.5));
+});
+
+test('Whole days with half day (10.5) is a valid increment', () => {
+  assert.ok(isValidDayIncrement(10.5));
+});
+
+test('Non-half-day decimal (11.22) is not a valid increment', () => {
+  assert.ok(!isValidDayIncrement(11.22));
+});
+
+test('Non-half-day decimal (10.1) is not a valid increment', () => {
+  assert.ok(!isValidDayIncrement(10.1));
+});
+
+test('Non-half-day decimal (10.9) is not a valid increment', () => {
+  assert.ok(!isValidDayIncrement(10.9));
+});
+
+test('Half day duration calculates correct billable days', () => {
+  const { billable } = calculateEarnings(500, 10.5, 'days', 0, 20);
+  assert.strictEqual(billable, 10.5);
+});
+
+test('Half day duration with leave calculates correct billable days', () => {
+  const { billable } = calculateEarnings(500, 10.5, 'days', 0.5, 20);
+  assert.strictEqual(billable, 10);
+});
+
+test('Half day duration calculates correct gross earnings', () => {
+  const { gross } = calculateEarnings(500, 10.5, 'days', 0, 20);
+  assert.strictEqual(round(gross), 6300);
 });
 
 // ─── Working Days (Period) ───────────────────────────────────────────────────
