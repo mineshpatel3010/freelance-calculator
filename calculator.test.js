@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { calculateEarnings, getWorkingDays, isValidDayIncrement } = require('./calculator');
+const { calculateEarnings, getWorkingDays, getBillableDays, isValidDayIncrement } = require('./calculator');
 
 function round(n, dp = 2) {
   return Math.round(n * Math.pow(10, dp)) / Math.pow(10, dp);
@@ -195,4 +195,86 @@ test('Correctly counts across DST boundary (Oct–Apr)', () => {
 test('Same day returns 0 if it is a bank holiday', () => {
   const days = getWorkingDays('2025-12-25', '2025-12-25');
   assert.strictEqual(days, 0);
+});
+
+// ─── Working Days Per Week ────────────────────────────────────────────────────
+
+// Clean week (Mon–Fri, no bank holidays) — Jan 6–10 2025
+
+test('Clean week at 5 days/week returns all 5 working days', () => {
+  assert.strictEqual(getBillableDays('2025-01-06', '2025-01-10', 5), 5);
+});
+
+test('Clean week at 3 days/week returns 3', () => {
+  assert.strictEqual(getBillableDays('2025-01-06', '2025-01-10', 3), 3);
+});
+
+test('Clean week at 1 day/week returns 1', () => {
+  assert.strictEqual(getBillableDays('2025-01-06', '2025-01-10', 1), 1);
+});
+
+// Christmas week — Dec 22–26 2025 (25th and 26th are bank holidays, only 3 working days available)
+
+test('Christmas week at 5 days/week returns 3 (bank holidays reduce available days)', () => {
+  assert.strictEqual(getBillableDays('2025-12-22', '2025-12-26', 5), 3);
+});
+
+test('Christmas week at 4 days/week returns 3 (only 3 days available due to bank holidays)', () => {
+  assert.strictEqual(getBillableDays('2025-12-22', '2025-12-26', 4), 3);
+});
+
+test('Christmas week at 3 days/week returns 3 (exactly matches available working days)', () => {
+  assert.strictEqual(getBillableDays('2025-12-22', '2025-12-26', 3), 3);
+});
+
+test('Christmas week at 1 day/week returns 1', () => {
+  assert.strictEqual(getBillableDays('2025-12-22', '2025-12-26', 1), 1);
+});
+
+// Full December 2025 — 21 working days across 5 weeks (bank holidays in week 4)
+
+test('December 2025 at 5 days/week returns all 21 working days', () => {
+  assert.strictEqual(getBillableDays('2025-12-01', '2025-12-31', 5), 21);
+});
+
+test('December 2025 at 3 days/week returns 15 (3 per week across 5 weeks)', () => {
+  // Weeks 1–3: 5 available → 3 worked each
+  // Week 4 (Christmas): 3 available (bank holidays) → min(3,3) = 3 worked
+  // Week 5 (Dec 29–31): 3 available (partial) → min(3,3) = 3 worked
+  assert.strictEqual(getBillableDays('2025-12-01', '2025-12-31', 3), 15);
+});
+
+test('December 2025 at 1 day/week returns 5 (1 per week across 5 weeks)', () => {
+  // Each of the 5 weeks has at least 1 available working day, so 1 is worked each week
+  assert.strictEqual(getBillableDays('2025-12-01', '2025-12-31', 1), 5);
+});
+
+// December 2025 with leave — leave is deducted from billable days after weekly pattern is applied
+
+test('December 2025 at 3 days/week with 3 days leave returns 12 billable days', () => {
+  const durationDays = getBillableDays('2025-12-01', '2025-12-31', 3); // 15
+  const { billable } = calculateEarnings(500, durationDays, 'days', 3, 20);
+  assert.strictEqual(billable, 12);
+});
+
+test('December 2025 at 1 day/week with 2 days leave returns 3 billable days', () => {
+  const durationDays = getBillableDays('2025-12-01', '2025-12-31', 1); // 5
+  const { billable } = calculateEarnings(500, durationDays, 'days', 2, 20);
+  assert.strictEqual(billable, 3);
+});
+
+test('December 2025 at 3 days/week with 0 leave returns 15 billable days', () => {
+  const durationDays = getBillableDays('2025-12-01', '2025-12-31', 3);
+  const { billable } = calculateEarnings(500, durationDays, 'days', 0, 20);
+  assert.strictEqual(billable, 15);
+});
+
+// Edge cases
+
+test('Returns 0 for invalid dates', () => {
+  assert.strictEqual(getBillableDays('', '', 5), 0);
+});
+
+test('Returns 0 for end date before start date', () => {
+  assert.strictEqual(getBillableDays('2025-12-31', '2025-12-01', 5), 0);
 });
