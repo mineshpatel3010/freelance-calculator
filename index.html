@@ -33,19 +33,6 @@
       padding: 36px 32px 28px;
     }
 
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: var(--brand);
-      margin-bottom: 4px;
-    }
-
-    .subtitle {
-      font-size: 0.875rem;
-      color: #888;
-      margin-bottom: 28px;
-    }
-
     .field {
       margin-bottom: 20px;
     }
@@ -53,11 +40,9 @@
     label {
       display: block;
       font-size: 0.8125rem;
-      font-weight: 600;
+      font-weight: 500;
       color: #555;
       margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
     }
 
     .input-wrap {
@@ -240,29 +225,28 @@
       text-transform: uppercase;
     }
 
-    .footer-note {
-      text-align: center;
-      font-size: 0.75rem;
-      color: #aaa;
-      margin-top: 24px;
-    }
-
   </style>
   <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
   <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
-      <div style="display:flex; align-items:center; gap:8px;">
-        <h1>Freelance Calculator</h1>
-        <span class="badge">Beta</span>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px;">
+      <div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="280" height="100" viewBox="0 0 280 100">
+          <rect x="0" y="0" width="280" height="68" rx="34" fill="#26215C"/>
+          <text x="140" y="35" text-anchor="middle" dominant-baseline="central" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="36" font-weight="800" fill="white" letter-spacing="-1">we<tspan fill="#AFA9EC">outside</tspan></text>
+          <text x="140" y="88" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#7F77DD" letter-spacing="2.5">OUTSIDE IR35 CALCULATOR</text>
+        </svg>
+        <p style="margin-top:14px; font-size:0.875rem; color:#888; font-weight:400;">Estimate what you'll earn on an outside IR35 contract.</p>
       </div>
-      <button onclick="resetAll()" style="background:none; border:none; font-size:0.8125rem; font-weight:600; color:#aaa; cursor:pointer; padding:0; transition:color 0.15s;" onmouseover="this.style.color='#555'" onmouseout="this.style.color='#aaa'">Reset</button>
+      <div style="display:flex; align-items:center; gap:8px; padding-top:4px;">
+        <span class="badge">Beta</span>
+        <button onclick="resetAll()" style="background:none; border:1px solid #AFA9EC; border-radius:8px; font-size:0.8125rem; font-weight:500; color:#7F77DD; cursor:pointer; padding:5px 12px; transition:background 0.15s;" onmouseover="this.style.background='#EEEDFE'" onmouseout="this.style.background='none'">Reset</button>
+      </div>
     </div>
-    <p class="subtitle">Estimate your contract earnings</p>
 
     <div class="field">
-      <label>Day Rate</label>
+      <label>Day rate</label>
       <div class="input-wrap has-prefix">
         <span class="prefix">£</span>
         <input type="number" id="dayRate" min="0" step="1" placeholder="500" />
@@ -271,7 +255,7 @@
 
     <div class="field">
       <div class="label-row">
-        <label>Contract Duration</label>
+        <label>Contract duration</label>
         <div class="unit-toggle">
           <button id="unit-days" class="active" onclick="setUnit('days')">Days</button>
           <button id="unit-period" onclick="setUnit('period')">Period</button>
@@ -298,7 +282,7 @@
     </div>
 
     <div class="field">
-      <label>Planned Leave</label>
+      <label>Planned leave</label>
       <div class="input-wrap has-suffix">
         <input type="number" id="leave" min="0" step="1" placeholder="25" />
         <span class="suffix leave-suffix">days</span>
@@ -307,7 +291,7 @@
     </div>
 
     <div class="field">
-      <label>VAT Rate</label>
+      <label>Vat rate</label>
       <div class="input-wrap has-suffix">
         <input type="number" id="vat" value="20" readonly />
         <span class="suffix">%</span>
@@ -334,7 +318,6 @@
         <span class="result-value" id="net">—</span>
       </div>
     </div>
-    <p class="footer-note">UK freelancers &mdash; estimates for outside IR35 engagements only</p>
   </div>
 
   <script src="calculator.js"></script>
