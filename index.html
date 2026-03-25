@@ -166,9 +166,27 @@
       cursor: pointer;
       transition: background 0.15s;
       margin-bottom: 20px;
+      touch-action: manipulation;
     }
 
     .calculate-btn:hover { background: #3C3489; }
+
+    /* ── Mobile ─────────────────────────────────────────────────────────────── */
+
+    /* Reduce card padding and border-radius on small screens */
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px 16px 20px;
+        border-radius: 16px;
+      }
+
+      /* Bring unit-toggle up to the same 36px touch target as dpw-toggle */
+      .unit-toggle button {
+        height: 36px;
+        width: auto;
+        padding: 0 12px;
+      }
+    }
 
     .dpw-toggle {
       display: flex;
@@ -189,6 +207,7 @@
       color: #999;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
+      touch-action: manipulation;
     }
 
     .dpw-toggle button:not(:last-child) { border-right: 1.5px solid #e0e0e0; }
@@ -226,6 +245,7 @@
       color: #999;
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
+      touch-action: manipulation;
     }
 
     .unit-toggle button:not(:last-child) { border-right: 1.5px solid #e0e0e0; }
@@ -322,17 +342,21 @@
 </head>
 <body>
   <div class="card">
-    <div style="position:relative; text-align:center; margin-bottom:24px;">
-      <button onclick="resetAll()" style="position:absolute; top:0; right:0; background:none; border:1px solid #AFA9EC; border-radius:8px; font-size:0.8125rem; font-weight:500; color:#7F77DD; cursor:pointer; padding:5px 12px; transition:background 0.15s;" onmouseover="this.style.background='#EEEDFE'" onmouseout="this.style.background='none'">Reset</button>
-      <svg xmlns="http://www.w3.org/2000/svg" width="240" height="86" viewBox="0 0 280 100">
-        <rect x="0" y="0" width="280" height="68" rx="34" fill="#26215C"/>
-        <text x="140" y="35" text-anchor="middle" dominant-baseline="central" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="36" font-weight="800" fill="white" letter-spacing="-1">we<tspan fill="#AFA9EC">outside</tspan></text>
-        <text x="140" y="88" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#7F77DD" letter-spacing="2.5">OUTSIDE IR35 CALCULATOR</text>
-      </svg>
-      <div style="margin-top:10px;">
-        <span class="badge">Beta</span>
+    <div style="margin-bottom:24px;">
+      <div style="display:flex; justify-content:flex-end; margin-bottom:12px;">
+        <button onclick="resetAll()" style="background:none; border:1px solid #AFA9EC; border-radius:8px; font-size:0.8125rem; font-weight:500; color:#7F77DD; cursor:pointer; padding:5px 12px; transition:background 0.15s; touch-action:manipulation;" onmouseover="this.style.background='#EEEDFE'" onmouseout="this.style.background='none'">Reset</button>
       </div>
-      <p style="margin-top:14px; font-size:0.875rem; color:#888; font-weight:400; white-space:nowrap;">Estimate what you'll earn on an outside IR35 contract.</p>
+      <div style="text-align:center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="240" height="86" viewBox="0 0 280 100">
+          <rect x="0" y="0" width="280" height="68" rx="34" fill="#26215C"/>
+          <text x="140" y="35" text-anchor="middle" dominant-baseline="central" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="36" font-weight="800" fill="white" letter-spacing="-1">we<tspan fill="#AFA9EC">outside</tspan></text>
+          <text x="140" y="88" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11" font-weight="500" fill="#7F77DD" letter-spacing="2.5">OUTSIDE IR35 CALCULATOR</text>
+        </svg>
+        <div style="margin-top:10px;">
+          <span class="badge">Beta</span>
+        </div>
+        <p style="margin-top:14px; font-size:0.875rem; color:#888; font-weight:400;">Estimate what you'll earn on an outside IR35 contract.</p>
+      </div>
     </div>
 
     <div class="field">
