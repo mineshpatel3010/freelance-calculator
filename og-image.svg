@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#26215C"/>
+
+  <!-- Subtle bottom gradient for depth -->
+  <defs>
+    <linearGradient id="bg-fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2E2870" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#26215C" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg-fade)"/>
+
+  <!-- weoutside wordmark -->
+  <text
+    x="600"
+    y="295"
+    text-anchor="middle"
+    dominant-baseline="central"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="128"
+    font-weight="800"
+    letter-spacing="-4"
+  >
+    <tspan fill="#FFFFFF">we</tspan><tspan fill="#AFA9EC">outside</tspan>
+  </text>
+
+  <!-- Subtitle -->
+  <text
+    x="600"
+    y="400"
+    text-anchor="middle"
+    font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-size="30"
+    font-weight="500"
+    fill="#AFA9EC"
+    letter-spacing="1.5"
+  >Outside IR35 contract earnings calculator</text>
+</svg>
